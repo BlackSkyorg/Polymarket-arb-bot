@@ -4,13 +4,29 @@ An arbitrage system for cross-platform prediction market trading between Kalshi 
 
 > 🎯 **Perfect for Beginners!** This bot is designed specifically for **people who don't know how to code**. Even if you've never written a single line of code, you can use this bot with our comprehensive step-by-step guides. No programming experience required!
 
+---
+
+---
+
+<div align="center">
+
+## 📚 **IMPORTANT: Please Refer to the Complete Documentation**
+
+**⚠️ CRITICAL: Before starting, please refer to our comprehensive documentation in the [`doc/`](./doc/) folder for detailed step-by-step guides, troubleshooting, and complete setup instructions.**
+
+![Documentation Guide](./doc/documentation-preview.png)
+
+**[👉 Click here to start with the Getting Started Guide](./doc/01-getting-started.md)** | **[📄 Download Complete PDF Guide](./doc/Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)**
+
+*All guides are designed for beginners with no coding experience - everything is explained step-by-step!*
+
+</div>
+
+---
+
 > 🔍 **What is this?** This bot automatically monitors prices on both platforms and executes trades when it finds opportunities where you can buy both YES and NO for less than $1.00, guaranteeing a profit when the market resolves.
 
-> 📚 **Complete Documentation:** We have comprehensive step-by-step guides in the **[`doc/`](./doc/)** folder for non-technical users. Everything from installation to running the bot is explained in simple terms. Start with the [Getting Started Guide](./doc/01-getting-started.md).
-
 > 🚀 **What's Coming Next:** I'm developing other innovative arbitrage bots with revolutionary strategies. Stay tuned for more advanced trading systems!
-
-> 💬 **Need help?** Contact me on Telegram: [@terauss](https://t.me/terauss)
 
 ---
 
@@ -67,16 +83,28 @@ DRY_RUN=0 dotenvx run -- cargo run --release
 
 ## 📚 Documentation
 
-**For non-technical users, follow these comprehensive guides:**
+> ⚠️ **CRITICAL: Before Starting - Read the Documentation!**
+> 
+> **This README provides a quick overview. For complete setup instructions, troubleshooting, and detailed explanations, you MUST refer to the comprehensive documentation in the [`doc/`](./doc/) folder. All guides are designed for beginners with no coding experience.**
 
-1. **[Getting Started Guide](./doc/01-getting-started.md)** - Overview and introduction
-2. **[Installation Guide](./doc/02-installation.md)** - Install Rust and dependencies (Windows/Mac/Linux)
-3. **[Getting Your Credentials](./doc/03-credentials.md)** - Get API keys from Kalshi and Polymarket
-4. **[Configuration Setup](./doc/04-configuration.md)** - Complete guide to all configuration options
-5. **[Running the Bot](./doc/05-running-the-bot.md)** - Start and monitor your bot
-6. **[Troubleshooting](./doc/06-troubleshooting.md)** - Common problems and solutions
+**Follow these comprehensive guides in order:**
 
-📄 **PDF Version:** A complete PDF guide is available: **[Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf](./Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)**
+1. **[📖 Getting Started Guide](./doc/01-getting-started.md)** - Overview and introduction - **START HERE!**
+2. **[🔧 Installation Guide](./doc/02-installation.md)** - Install Rust and dependencies (Windows/Mac/Linux)
+3. **[🔑 Getting Your Credentials](./doc/03-credentials.md)** - Get API keys from Kalshi and Polymarket
+4. **[⚙️ Configuration Setup](./doc/04-configuration.md)** - Complete guide to all configuration options
+5. **[▶️ Running the Bot](./doc/05-running-the-bot.md)** - Start and monitor your bot
+6. **[🔧 Troubleshooting](./doc/06-troubleshooting.md)** - Common problems and solutions
+
+📄 **PDF Version:** A complete PDF guide combining all documentation: **[📥 Download Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf](./doc/Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)**
+
+**Why refer to the documentation?**
+- ✅ Step-by-step instructions for every step
+- ✅ Screenshots and visual guides
+- ✅ Troubleshooting for common issues
+- ✅ Configuration explanations
+- ✅ Safety warnings and best practices
+- ✅ Written specifically for non-technical users
 
 ---
 
