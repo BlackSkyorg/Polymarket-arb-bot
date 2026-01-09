@@ -14,7 +14,7 @@ An arbitrage system for cross-platform prediction market trading between Kalshi 
 
 **⚠️ CRITICAL: Before starting, please refer to our comprehensive documentation in the [`doc/`](./doc/) folder for detailed step-by-step guides, troubleshooting, and complete setup instructions.**
 
-![Documentation Guide](./doc/documentation-preview.png)
+![Documentation Guide](./documentation-preview.png)
 
 **[👉 Click here to start with the Getting Started Guide](./doc/01-getting-started.md)** | **[📄 Download Complete PDF Guide](./doc/Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)**
 
