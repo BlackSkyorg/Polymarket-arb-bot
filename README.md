@@ -1,32 +1,72 @@
 # Polymarket-Kalshi Arbitrage Bot
 
-An arbitrage system for cross-platform prediction market trading between Kalshi and Polymarket.
-
-> **Perfect for Beginners!** This bot is designed specifically for **people who don't know how to code**. Even if you've never written a single line of code, you can use this bot with our comprehensive step-by-step guides. No programming experience required!
-
----
-
----
+A high-performance, production-ready arbitrage trading system for cross-platform prediction markets. Automatically detects and executes arbitrage opportunities between Kalshi and Polymarket with sub-millisecond latency.
 
 <div align="center">
 
-##  **IMPORTANT: Please Refer to the Complete Documentation**
-
-** CRITICAL: Before starting, please refer to our comprehensive documentation in the [`doc/`](./doc/) folder for detailed step-by-step guides, troubleshooting, and complete setup instructions.**
-
-![Documentation Guide](./documentation-preview.png)
-
-**[ Click here to start with the Getting Started Guide](./doc/01-getting-started.md)** | **[ Download Complete PDF Guide](./doc/Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)**
-
-*All guides are designed for beginners with no coding experience - everything is explained step-by-step!*
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20OR%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
+[![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org/)
 
 </div>
 
 ---
 
->  **What is this?** This bot automatically monitors prices on both platforms and executes trades when it finds opportunities where you can buy both YES and NO for less than $1.00, guaranteeing a profit when the market resolves.
+## Overview
 
->  **What's Coming Next:** I'm developing other innovative arbitrage bots with revolutionary strategies. Stay tuned for more advanced trading systems!
+This arbitrage bot exploits price inefficiencies across prediction market platforms by simultaneously purchasing complementary outcomes (YES/NO) when their combined cost is less than the guaranteed $1.00 payout. The system features:
+
+- **Real-time monitoring** via WebSocket connections to both platforms
+- **Sub-millisecond arbitrage detection** using SIMD-accelerated algorithms
+- **Concurrent order execution** with automatic position reconciliation
+- **Comprehensive risk management** including circuit breakers and position limits
+- **Full trade history tracking** with SQLite database and analytics tools
+- **Beginner-friendly** with extensive documentation for non-technical users
+
+---
+
+## Documentation
+
+**Complete setup and usage documentation is available in the [`doc/`](./doc/) folder.**
+
+![Documentation Guide](./documentation-preview.png)
+
+### Quick Links
+
+1. [**Getting Started Guide**](./doc/01-getting-started.md) - System overview and prerequisites
+2. [**Installation Guide**](./doc/02-installation.md) - Platform-specific installation (Windows/Mac/Linux)
+3. [**Credentials Setup**](./doc/03-credentials.md) - API key configuration for both platforms
+4. [**Configuration Guide**](./doc/04-configuration.md) - Environment variables and advanced settings
+5. [**Running the Bot**](./doc/05-running-the-bot.md) - Operational procedures and monitoring
+6. [**Troubleshooting**](./doc/06-troubleshooting.md) - Common issues and solutions
+
+**PDF Version:** [Complete User Guide (PDF)](./doc/Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)
+
+---
+
+## Features
+
+### Core Functionality
+
+- **Cross-Platform Arbitrage**: Kalshi ↔ Polymarket and same-platform opportunities
+- **Real-Time Price Feeds**: WebSocket connections for instant market updates
+- **Atomic Orderbook Cache**: Lock-free data structures for zero-copy updates
+- **SIMD Acceleration**: Parallel arbitrage detection across multiple markets
+- **Concurrent Execution**: Simultaneous order placement on both platforms
+- **Automatic Reconciliation**: Position balancing for mismatched fills
+
+### Risk Management
+
+- **Circuit Breaker System**: Configurable limits for positions, losses, and errors
+- **Position Tracking**: Real-time P&L and exposure monitoring
+- **Dry-Run Mode**: Paper trading for testing without capital risk
+- **Fee Optimization**: Automatic fee calculation and profit validation
+
+### Data & Analytics
+
+- **SQLite Database**: Persistent storage of all trading activity
+- **Trade Analytics**: Performance metrics, success rates, and execution statistics
+- **CSV Export**: Data export for external analysis
+- **Historical Queries**: Comprehensive reporting on trades and opportunities
 
 ---
 
@@ -171,32 +211,36 @@ DRY_RUN=0 dotenvx run -- cargo run --release
 
 ---
 
-## Trading History Database 
+## Trading History & Analytics
 
-All trading activity is automatically saved to a local SQLite database!
+The system includes a comprehensive SQLite database that automatically records all trading activity, providing persistent storage and advanced analytics capabilities.
+
+### Query Interface
 
 ```bash
-# View your trading history
+# View recent trading activity
 cargo run --bin trading_history
 
-# Today's summary
+# Display today's performance summary
 cargo run --bin trading_history summary
 
-# All-time statistics
+# Generate all-time statistics
 cargo run --bin trading_history stats
 
-# Export to CSV for Excel analysis
+# Export complete trade history to CSV
 cargo run --bin trading_history export
 ```
 
-**Features:**
--  Track every trade and arbitrage opportunity
--  Daily/weekly performance analytics
--  Persistent SQLite database
--  CSV export for Excel/Python
--  Advanced query capabilities
+### Analytics Features
 
-**Documentation:** See `README_DATABASE.md` or `TRADING_HISTORY_QUICK_START.md`
+- **Complete Trade Logging**: Every fill recorded with timestamp, price, size, and fees
+- **Opportunity Tracking**: All detected arbitrage opportunities (executed and missed)
+- **Performance Metrics**: Success rates, execution latency, and profit statistics
+- **Time-Series Analysis**: Daily, weekly, and monthly performance summaries
+- **Data Export**: CSV format compatible with Excel, Python, and R
+- **SQL Access**: Direct database queries for custom analysis
+
+**Documentation:** Detailed usage instructions available in `README_DATABASE.md`
 
 ---
 
@@ -232,27 +276,28 @@ FORCE_DISCOVERY=1 dotenvx run -- cargo run --release
 
 ---
 
-## How It Works
+## Arbitrage Methodology
 
-### Arbitrage Mechanics
+### Market Mechanics
 
-In prediction markets, **YES + NO = $1.00** guaranteed.
-
-Arbitrage exists when:
+Prediction markets guarantee that complementary outcomes sum to $1.00 (YES + NO = $1.00). This fundamental property creates arbitrage opportunities when:
 
 ```
-Best YES ask (platform A) + Best NO ask (platform B) < $1.00
+Best YES ask (Platform A) + Best NO ask (Platform B) < $1.00
 ```
 
-**Example:**
+### Execution Example
 
 ```
-Kalshi YES ask:  42¢
-Poly NO ask:     56¢
-Total cost:      98¢
-Guaranteed:     100¢
-Profit:           2¢ per contract
+Kalshi YES ask:     $0.42
+Polymarket NO ask:  $0.56
+──────────────────────────
+Total acquisition:  $0.98
+Guaranteed payout:  $1.00
+Risk-free profit:   $0.02 per contract pair
 ```
+
+The system continuously monitors all available markets across both platforms, detecting these inefficiencies in real-time and executing trades within microseconds of discovery.
 
 ### Four Arbitrage Types
 
@@ -287,13 +332,13 @@ src/
 └── config.rs            # League configs, thresholds
 ```
 
-### Key Features
+### Technical Highlights
 
--  Lock-free orderbook cache using atomic operations
--  SIMD-accelerated arbitrage detection for sub-millisecond latency
--  Concurrent order execution with automatic position reconciliation
--  Circuit breaker protection with configurable risk limits
--  Intelligent market discovery with caching and incremental updates
+- **Lock-Free Architecture**: Atomic operations for zero-copy orderbook updates
+- **SIMD Optimization**: Parallel computation achieving sub-millisecond arbitrage detection
+- **Concurrent Execution**: Asynchronous order placement across multiple platforms
+- **Intelligent Caching**: Market discovery with incremental updates and persistence
+- **Risk Management**: Multi-layered protection including circuit breakers and position limits
 
 ---
 
@@ -319,114 +364,136 @@ cargo bench
 
 ---
 
-## Project Status
+## Implementation Status
 
-###  Completed Features
+### Production Features
 
--  Kalshi REST/WebSocket client
--  Polymarket REST/WebSocket client
--  Lock-free orderbook cache
--  SIMD arb detection
--  Concurrent order execution
--  Position & P&L tracking
--  **SQLite trading history database** 
--  **Trade analytics & reporting tools** 
--  Circuit breaker
--  Market discovery & caching
--  Beginner-friendly documentation and guides
+- ✅ Kalshi REST API and WebSocket client
+- ✅ Polymarket REST API and WebSocket client
+- ✅ Lock-free atomic orderbook cache
+- ✅ SIMD-accelerated arbitrage detection
+- ✅ Concurrent multi-platform order execution
+- ✅ Real-time position and P&L tracking
+- ✅ SQLite trade history database
+- ✅ Comprehensive analytics and reporting
+- ✅ Circuit breaker risk management
+- ✅ Intelligent market discovery with caching
+- ✅ Complete documentation suite
 
-###  Future Enhancements
+### Planned Enhancements
 
-- [ ] Risk limit configuration UI
-- [ ] Multi-account support
-- [ ] Advanced order routing strategies
-- [ ] Historical performance analytics dashboard
+- Configuration management interface
+- Multi-account portfolio support
+- Advanced order routing algorithms
+- Enhanced performance analytics dashboard
+- Machine learning integration for opportunity prediction
 
-###  Coming Soon
+###  Roadmap
 
-I'm actively developing other innovative arbitrage bots with revolutionary strategies. These will feature advanced trading algorithms and cutting-edge market analysis techniques. Stay updated by following this repository or contacting me on Telegram [@terauss](https://t.me/terauss)!
+Additional trading systems with advanced strategies are currently in development. These will feature enhanced algorithmic trading capabilities and sophisticated market analysis tools. For updates and inquiries, contact via Telegram: [@mistKail](https://t.me/mistKail)
 
 ---
 
 ## Supported Markets
 
-The bot supports multiple sports leagues:
+The system monitors prediction markets across multiple professional sports leagues:
 
-- **Soccer:** EPL, Bundesliga, La Liga, Serie A, Ligue 1, UCL, UEL, EFL Championship
-- **Basketball:** NBA
-- **Football:** NFL
-- **Hockey:** NHL
-- **Baseball:** MLB, MLS
-- **College Football:** NCAAF
+| Sport | Leagues |
+|-------|---------|
+| **Soccer** | English Premier League, Bundesliga, La Liga, Serie A, Ligue 1, UEFA Champions League, UEFA Europa League, EFL Championship |
+| **Basketball** | NBA |
+| **American Football** | NFL, NCAAF |
+| **Hockey** | NHL |
+| **Baseball** | MLB |
+| **Soccer (Americas)** | MLS |
+
+Market coverage includes moneyline, spread, total, and both-teams-to-score (BTTS) market types where available on both platforms.
 
 ---
 
 ## Troubleshooting
 
-Having problems? Check the **[Troubleshooting Guide](./doc/06-troubleshooting.md)** for:
+For operational issues, consult the **[Troubleshooting Guide](./doc/06-troubleshooting.md)** which covers:
 
-- Installation issues
-- Credential problems
-- Runtime errors
-- Connection issues
-- Performance problems
+- Platform-specific installation procedures
+- API credential configuration errors
+- Runtime and execution issues
+- Network connectivity problems
+- Performance optimization
 
-Common issues:
-- **"cargo: command not found"** → [Installation Guide](./doc/02-installation.md)
-- **"KALSHI_API_KEY_ID not set"** → [Configuration Guide](./doc/04-configuration.md)
-- **"No market pairs found"** → [Troubleshooting Guide](./doc/06-troubleshooting.md)
-- **Bot won't execute trades** → Check `DRY_RUN` setting and circuit breaker limits
+### Common Issues
 
----
+| Error | Resolution |
+|-------|------------|
+| `cargo: command not found` | Install Rust toolchain - see [Installation Guide](./doc/02-installation.md) |
+| `KALSHI_API_KEY_ID not set` | Configure environment variables - see [Configuration Guide](./doc/04-configuration.md) |
+| `No market pairs found` | Force discovery refresh or check market hours - see [Troubleshooting Guide](./doc/06-troubleshooting.md) |
+| No trade execution | Verify `DRY_RUN=0` and circuit breaker thresholds |
 
-## Safety & Warnings
-
- **Important Safety Notes:**
-
-- **Always start with `DRY_RUN=1`** - Test mode lets you verify everything works without risking real money
-- **Start with small amounts** - Even when going live, use small position sizes initially
-- **Monitor your bot** - Check on it regularly, especially when starting
-- **Keep credentials secret** - Never share your API keys or private keys
-- **This is not financial advice** - Trade at your own risk
+For unresolved issues, contact technical support: [@mistKail](https://t.me/mistKail)
 
 ---
 
-## About This Project
+## Risk Disclosure & Safety
 
-This bot was created with beginners in mind. You don't need to know how to code to use it - just follow the guides in the `doc/` folder. Whether you're a complete beginner or an experienced trader, this bot makes arbitrage trading accessible to everyone.
+**Important Notices:**
 
-**Upcoming Projects:** I'm working on other arbitrage bots with revolutionary strategies and advanced features. This beginner-friendly bot is just the first in a series of innovative trading systems I'm developing.
+- **Testing Required:** Always begin with `DRY_RUN=1` to validate configuration without capital exposure
+- **Position Sizing:** Start with minimal position sizes when transitioning to live trading
+- **Active Monitoring:** Regular oversight is essential, particularly during initial operation
+- **Credential Security:** API keys and private keys must be kept confidential and never committed to version control
+- **No Financial Advice:** This software is provided for informational and educational purposes only. Users assume all risks associated with trading activities
+- **No Guarantees:** Past performance and simulated results do not guarantee future outcomes
+- **Regulatory Compliance:** Users are responsible for ensuring compliance with applicable laws and regulations in their jurisdiction
+
+---
+
+## About
+
+This project provides a production-ready arbitrage trading system designed to be accessible to both technical and non-technical users. The comprehensive documentation in the `doc/` folder includes step-by-step instructions for setup and operation, making sophisticated algorithmic trading accessible to users of all experience levels.
+
+The system is built with Rust for maximum performance and reliability, utilizing modern concurrency patterns and zero-copy optimization techniques to achieve institutional-grade execution speeds.
 
 ## Contributing
 
-Contributions are welcome! This project is open source and designed to help the prediction market trading community, especially those new to automated trading.
+Contributions are welcome from developers interested in prediction market technology and algorithmic trading systems. Please review the codebase architecture and existing patterns before submitting pull requests.
 
 ---
 
 ## Support & Contact
 
- **Need help?** Contact me on Telegram: [@terauss](https://t.me/terauss)
- **Documentation:** Check the [documentation folder](./doc/) for detailed guides
- **Issues:** Report bugs or request features on GitHub
+- **Technical Support:** For assistance with setup, configuration, or operational issues, please contact via Telegram: [@mistKail](https://t.me/mistKail)
+- **Documentation:** Comprehensive guides are available in the [documentation folder](./doc/)
+- **Bug Reports:** Submit issues via GitHub's issue tracker
+- **Feature Requests:** Proposals for enhancements can be discussed via GitHub issues or Telegram
 
 ---
 
 ## License
 
-This project is licensed under either of:
+This software is dual-licensed under your choice of:
 
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+- **Apache License 2.0** ([LICENSE-APACHE](LICENSE-APACHE) or [apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
+- **MIT License** ([LICENSE-MIT](LICENSE-MIT) or [opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
 
-at your option.
+### Disclaimer
 
----
-
-## Related Projects & Keywords
-
-**Keywords:** polymarket arbitrage bot, polymarket-kalshi arbitrage bot, kalshi-poly arbitrage, poly-poly arbitrage, kalshi-kalshi arbitrage, kalshi arbitrage, prediction market arbitrage, cross-platform trading bot, automated trading, sports betting arbitrage, Rust trading bot
+This software is provided "as is" without warranty of any kind. Users assume all responsibility for trading decisions and outcomes. The authors and contributors are not liable for any financial losses incurred through the use of this software.
 
 ---
 
-**Ready to start?** Follow the guides in order:
+## Technical Keywords
+
+**Search Terms:** polymarket arbitrage, kalshi arbitrage, prediction market arbitrage, cross-platform trading, automated market making, algorithmic trading, SIMD optimization, lock-free concurrency, high-frequency trading, sports prediction markets, cryptocurrency trading bot, Rust financial systems, WebSocket trading, arbitrage detection, market microstructure
+
+---
+
+---
+
+## Getting Started
+
+To begin using the arbitrage bot, follow the documentation in sequence:
+
 1. [Getting Started](./doc/01-getting-started.md) → 2. [Installation](./doc/02-installation.md) → 3. [Credentials](./doc/03-credentials.md) → 4. [Configuration](./doc/04-configuration.md) → 5. [Running the Bot](./doc/05-running-the-bot.md)
+
+For technical inquiries or support, contact: [@mistKail](https://t.me/mistKail)
