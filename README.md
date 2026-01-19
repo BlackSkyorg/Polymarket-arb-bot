@@ -2,7 +2,7 @@
 
 An arbitrage system for cross-platform prediction market trading between Kalshi and Polymarket.
 
-> 🎯 **Perfect for Beginners!** This bot is designed specifically for **people who don't know how to code**. Even if you've never written a single line of code, you can use this bot with our comprehensive step-by-step guides. No programming experience required!
+> **Perfect for Beginners!** This bot is designed specifically for **people who don't know how to code**. Even if you've never written a single line of code, you can use this bot with our comprehensive step-by-step guides. No programming experience required!
 
 ---
 
@@ -10,13 +10,13 @@ An arbitrage system for cross-platform prediction market trading between Kalshi 
 
 <div align="center">
 
-## 📚 **IMPORTANT: Please Refer to the Complete Documentation**
+##  **IMPORTANT: Please Refer to the Complete Documentation**
 
-**⚠️ CRITICAL: Before starting, please refer to our comprehensive documentation in the [`doc/`](./doc/) folder for detailed step-by-step guides, troubleshooting, and complete setup instructions.**
+** CRITICAL: Before starting, please refer to our comprehensive documentation in the [`doc/`](./doc/) folder for detailed step-by-step guides, troubleshooting, and complete setup instructions.**
 
 ![Documentation Guide](./documentation-preview.png)
 
-**[👉 Click here to start with the Getting Started Guide](./doc/01-getting-started.md)** | **[📄 Download Complete PDF Guide](./doc/Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)**
+**[ Click here to start with the Getting Started Guide](./doc/01-getting-started.md)** | **[ Download Complete PDF Guide](./doc/Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)**
 
 *All guides are designed for beginners with no coding experience - everything is explained step-by-step!*
 
@@ -24,9 +24,9 @@ An arbitrage system for cross-platform prediction market trading between Kalshi 
 
 ---
 
-> 🔍 **What is this?** This bot automatically monitors prices on both platforms and executes trades when it finds opportunities where you can buy both YES and NO for less than $1.00, guaranteeing a profit when the market resolves.
+>  **What is this?** This bot automatically monitors prices on both platforms and executes trades when it finds opportunities where you can buy both YES and NO for less than $1.00, guaranteeing a profit when the market resolves.
 
-> 🚀 **What's Coming Next:** I'm developing other innovative arbitrage bots with revolutionary strategies. Stay tuned for more advanced trading systems!
+>  **What's Coming Next:** I'm developing other innovative arbitrage bots with revolutionary strategies. Stay tuned for more advanced trading systems!
 
 ---
 
@@ -45,7 +45,7 @@ cd prediction-market-arbitrage  # or your project directory name
 cargo build --release
 ```
 
-📖 **Detailed installation guide:** [Installation Guide](./doc/02-installation.md)
+ **Detailed installation guide:** [Installation Guide](./doc/02-installation.md)
 
 ### 2. Set Up Credentials
 
@@ -65,7 +65,7 @@ DRY_RUN=1
 RUST_LOG=info
 ```
 
-📖 **Complete credentials setup guide:** [Getting Your Credentials](./doc/03-credentials.md) | [Configuration Setup](./doc/04-configuration.md)
+ **Complete credentials setup guide:** [Getting Your Credentials](./doc/03-credentials.md) | [Configuration Setup](./doc/04-configuration.md)
 
 ### 3. Run
 
@@ -77,34 +77,34 @@ dotenvx run -- cargo run --release
 DRY_RUN=0 dotenvx run -- cargo run --release
 ```
 
-📖 **Running the bot guide:** [Running the Bot](./doc/05-running-the-bot.md)
+ **Running the bot guide:** [Running the Bot](./doc/05-running-the-bot.md)
 
 ---
 
-## 📚 Documentation
+##  Documentation
 
-> ⚠️ **CRITICAL: Before Starting - Read the Documentation!**
+>  **CRITICAL: Before Starting - Read the Documentation!**
 > 
 > **This README provides a quick overview. For complete setup instructions, troubleshooting, and detailed explanations, you MUST refer to the comprehensive documentation in the [`doc/`](./doc/) folder. All guides are designed for beginners with no coding experience.**
 
 **Follow these comprehensive guides in order:**
 
-1. **[📖 Getting Started Guide](./doc/01-getting-started.md)** - Overview and introduction - **START HERE!**
-2. **[🔧 Installation Guide](./doc/02-installation.md)** - Install Rust and dependencies (Windows/Mac/Linux)
-3. **[🔑 Getting Your Credentials](./doc/03-credentials.md)** - Get API keys from Kalshi and Polymarket
-4. **[⚙️ Configuration Setup](./doc/04-configuration.md)** - Complete guide to all configuration options
-5. **[▶️ Running the Bot](./doc/05-running-the-bot.md)** - Start and monitor your bot
-6. **[🔧 Troubleshooting](./doc/06-troubleshooting.md)** - Common problems and solutions
+1. **[ Getting Started Guide](./doc/01-getting-started.md)** - Overview and introduction - **START HERE!**
+2. **[ Installation Guide](./doc/02-installation.md)** - Install Rust and dependencies (Windows/Mac/Linux)
+3. **[ Getting Your Credentials](./doc/03-credentials.md)** - Get API keys from Kalshi and Polymarket
+4. **[ Configuration Setup](./doc/04-configuration.md)** - Complete guide to all configuration options
+5. **[ Running the Bot](./doc/05-running-the-bot.md)** - Start and monitor your bot
+6. **[ Troubleshooting](./doc/06-troubleshooting.md)** - Common problems and solutions
 
-📄 **PDF Version:** A complete PDF guide combining all documentation: **[📥 Download Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf](./doc/Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)**
+ **PDF Version:** A complete PDF guide combining all documentation: **[ Download Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf](./doc/Polymarket-Kalshi-Arbitrage-Bot-User-Guide.pdf)**
 
 **Why refer to the documentation?**
-- ✅ Step-by-step instructions for every step
-- ✅ Screenshots and visual guides
-- ✅ Troubleshooting for common issues
-- ✅ Configuration explanations
-- ✅ Safety warnings and best practices
-- ✅ Written specifically for non-technical users
+-  Step-by-step instructions for every step
+-  Screenshots and visual guides
+-  Troubleshooting for common issues
+-  Configuration explanations
+-  Safety warnings and best practices
+-  Written specifically for non-technical users
 
 ---
 
@@ -146,7 +146,7 @@ DRY_RUN=0 dotenvx run -- cargo run --release
 | `CB_MAX_CONSECUTIVE_ERRORS` | `5` | Consecutive errors before halt |
 | `CB_COOLDOWN_SECS` | `60` | Cooldown period after circuit breaker trips |
 
-📖 **Detailed configuration guide:** [Configuration Setup](./doc/04-configuration.md)
+ **Detailed configuration guide:** [Configuration Setup](./doc/04-configuration.md)
 
 ---
 
@@ -167,7 +167,36 @@ DRY_RUN=0 dotenvx run -- cargo run --release
 3. Fund your wallet on Polygon network with USDC
 4. The wallet address is your `POLY_FUNDER`
 
-📖 **Step-by-step credentials guide:** [Getting Your Credentials](./doc/03-credentials.md)
+ **Step-by-step credentials guide:** [Getting Your Credentials](./doc/03-credentials.md)
+
+---
+
+## Trading History Database 
+
+All trading activity is automatically saved to a local SQLite database!
+
+```bash
+# View your trading history
+cargo run --bin trading_history
+
+# Today's summary
+cargo run --bin trading_history summary
+
+# All-time statistics
+cargo run --bin trading_history stats
+
+# Export to CSV for Excel analysis
+cargo run --bin trading_history export
+```
+
+**Features:**
+-  Track every trade and arbitrage opportunity
+-  Daily/weekly performance analytics
+-  Persistent SQLite database
+-  CSV export for Excel/Python
+-  Advanced query capabilities
+
+**Documentation:** See `README_DATABASE.md` or `TRADING_HISTORY_QUICK_START.md`
 
 ---
 
@@ -260,11 +289,11 @@ src/
 
 ### Key Features
 
-- ✅ Lock-free orderbook cache using atomic operations
-- ✅ SIMD-accelerated arbitrage detection for sub-millisecond latency
-- ✅ Concurrent order execution with automatic position reconciliation
-- ✅ Circuit breaker protection with configurable risk limits
-- ✅ Intelligent market discovery with caching and incremental updates
+-  Lock-free orderbook cache using atomic operations
+-  SIMD-accelerated arbitrage detection for sub-millisecond latency
+-  Concurrent order execution with automatic position reconciliation
+-  Circuit breaker protection with configurable risk limits
+-  Intelligent market discovery with caching and incremental updates
 
 ---
 
@@ -292,26 +321,28 @@ cargo bench
 
 ## Project Status
 
-### ✅ Completed Features
+###  Completed Features
 
-- ✅ Kalshi REST/WebSocket client
-- ✅ Polymarket REST/WebSocket client
-- ✅ Lock-free orderbook cache
-- ✅ SIMD arb detection
-- ✅ Concurrent order execution
-- ✅ Position & P&L tracking
-- ✅ Circuit breaker
-- ✅ Market discovery & caching
-- ✅ Beginner-friendly documentation and guides
+-  Kalshi REST/WebSocket client
+-  Polymarket REST/WebSocket client
+-  Lock-free orderbook cache
+-  SIMD arb detection
+-  Concurrent order execution
+-  Position & P&L tracking
+-  **SQLite trading history database** 
+-  **Trade analytics & reporting tools** 
+-  Circuit breaker
+-  Market discovery & caching
+-  Beginner-friendly documentation and guides
 
-### 🚧 Future Enhancements
+###  Future Enhancements
 
 - [ ] Risk limit configuration UI
 - [ ] Multi-account support
 - [ ] Advanced order routing strategies
 - [ ] Historical performance analytics dashboard
 
-### 🚀 Coming Soon
+###  Coming Soon
 
 I'm actively developing other innovative arbitrage bots with revolutionary strategies. These will feature advanced trading algorithms and cutting-edge market analysis techniques. Stay updated by following this repository or contacting me on Telegram [@terauss](https://t.me/terauss)!
 
@@ -350,7 +381,7 @@ Common issues:
 
 ## Safety & Warnings
 
-⚠️ **Important Safety Notes:**
+ **Important Safety Notes:**
 
 - **Always start with `DRY_RUN=1`** - Test mode lets you verify everything works without risking real money
 - **Start with small amounts** - Even when going live, use small position sizes initially
@@ -374,11 +405,9 @@ Contributions are welcome! This project is open source and designed to help the 
 
 ## Support & Contact
 
-💬 **Need help?** Contact me on Telegram: [@terauss](https://t.me/terauss)
-
-📚 **Documentation:** Check the [documentation folder](./doc/) for detailed guides
-
-🐛 **Issues:** Report bugs or request features on GitHub
+ **Need help?** Contact me on Telegram: [@terauss](https://t.me/terauss)
+ **Documentation:** Check the [documentation folder](./doc/) for detailed guides
+ **Issues:** Report bugs or request features on GitHub
 
 ---
 

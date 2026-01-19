@@ -10,6 +10,7 @@ use std::time::{Duration, Instant};
 use tokio::sync::mpsc;
 use tracing::{info, warn, error};
 
+use crate::database::{TradingDatabase, TradeRecord, ArbitrageRecord};
 use crate::kalshi::KalshiApiClient;
 use crate::polymarket_clob::SharedAsyncClient;
 use crate::types::{
@@ -53,6 +54,7 @@ pub struct ExecutionEngine {
     state: Arc<GlobalState>,
     circuit_breaker: Arc<CircuitBreaker>,
     position_channel: PositionChannel,
+    trading_db: Option<Arc<TradingDatabase>>,
     in_flight: Arc<[AtomicU64; 8]>,
     clock: NanoClock,
     pub dry_run: bool,
@@ -66,6 +68,7 @@ impl ExecutionEngine {
         state: Arc<GlobalState>,
         circuit_breaker: Arc<CircuitBreaker>,
         position_channel: PositionChannel,
+        trading_db: Option<Arc<TradingDatabase>>,
         dry_run: bool,
     ) -> Self {
         let test_mode = std::env::var("TEST_ARB")
@@ -78,6 +81,7 @@ impl ExecutionEngine {
             state,
             circuit_breaker,
             position_channel,
+            trading_db,
             in_flight: Arc::new(std::array::from_fn(|_| AtomicU64::new(0))),
             clock: NanoClock::new(),
             dry_run,
@@ -178,6 +182,26 @@ impl ExecutionEngine {
             latency_to_exec / 1000
         );
 
+        // Log arbitrage opportunity to database
+        if let Some(ref db) = self.trading_db {
+            let arb_record = ArbitrageRecord {
+                timestamp: chrono::Utc::now().to_rfc3339(),
+                market_id: pair.pair_id.to_string(),
+                description: pair.description.to_string(),
+                arb_type: format!("{:?}", req.arb_type),
+                yes_price: req.yes_price,
+                no_price: req.no_price,
+                yes_size: req.yes_size,
+                no_size: req.no_size,
+                profit_cents,
+                total_cost: req.yes_price + req.no_price + req.estimated_fee_cents(),
+                executed: !self.dry_run,
+                detection_latency_ns: Some(latency_to_exec),
+                execution_latency_ns: None,
+            };
+            let _ = db.log_arbitrage(&arb_record);
+        }
+
         if self.dry_run {
             info!("[EXEC] 🏃 DRY RUN - would execute {} contracts", max_contracts);
             self.release_in_flight_delayed(market_id);
@@ -253,16 +277,42 @@ impl ExecutionEngine {
                         ArbType::KalshiOnly => ("kalshi", "yes", "kalshi", "no"),
                     };
 
-                    self.position_channel.record_fill(FillRecord::new(
+                    let fill1 = FillRecord::new(
                         &pair.pair_id, &pair.description, platform1, side1,
                         matched as f64, yes_cost as f64 / 100.0 / yes_filled.max(1) as f64,
                         0.0, &yes_order_id,
-                    ));
-                    self.position_channel.record_fill(FillRecord::new(
+                    );
+                    let fill2 = FillRecord::new(
                         &pair.pair_id, &pair.description, platform2, side2,
                         matched as f64, no_cost as f64 / 100.0 / no_filled.max(1) as f64,
                         0.0, &no_order_id,
-                    ));
+                    );
+
+                    self.position_channel.record_fill(fill1.clone());
+                    self.position_channel.record_fill(fill2.clone());
+
+                    // Log trades to database
+                    if let Some(ref db) = self.trading_db {
+                        let mut trade1 = TradeRecord::new(
+                            &pair.pair_id, &pair.description, platform1, side1,
+                            matched as f64, yes_cost as f64 / 100.0 / yes_filled.max(1) as f64,
+                            0.0, &yes_order_id,
+                        );
+                        trade1.arb_type = Some(format!("{:?}", req.arb_type));
+                        trade1.profit_cents = Some(actual_profit);
+                        trade1.execution_time_us = Some((self.clock.now_ns() - req.detected_ns) as i64 / 1000);
+                        let _ = db.log_trade(&trade1);
+
+                        let mut trade2 = TradeRecord::new(
+                            &pair.pair_id, &pair.description, platform2, side2,
+                            matched as f64, no_cost as f64 / 100.0 / no_filled.max(1) as f64,
+                            0.0, &no_order_id,
+                        );
+                        trade2.arb_type = Some(format!("{:?}", req.arb_type));
+                        trade2.profit_cents = Some(actual_profit);
+                        trade2.execution_time_us = Some((self.clock.now_ns() - req.detected_ns) as i64 / 1000);
+                        let _ = db.log_trade(&trade2);
+                    }
                 }
 
                 Ok(ExecutionResult {

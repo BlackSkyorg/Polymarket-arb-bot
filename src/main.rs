@@ -41,6 +41,7 @@ use tracing::{error, info, warn};
 use cache::TeamCache;
 use circuit_breaker::{CircuitBreaker, CircuitBreakerConfig};
 use config::{ARB_THRESHOLD, ENABLED_LEAGUES, WS_RECONNECT_DELAY_SECS};
+use database::TradingDatabase;
 use discovery::DiscoveryClient;
 use execution::{ExecutionEngine, create_execution_channel, run_execution_loop};
 use kalshi::{KalshiConfig, KalshiApiClient};
@@ -156,6 +157,20 @@ async fn main() -> Result<()> {
               pair.kalshi_market_ticker);
     }
 
+    // Initialize trading database
+    let trading_db = match TradingDatabase::new() {
+        Ok(db) => {
+            let count = db.get_trade_count().unwrap_or(0);
+            info!("💾 Trading database ready: {} historical trades", count);
+            Some(Arc::new(db))
+        }
+        Err(e) => {
+            warn!("⚠️  Could not initialize trading database: {}", e);
+            warn!("   Trading history will not be saved to database");
+            None
+        }
+    };
+
     // Build global state
     let state = Arc::new({
         let mut s = GlobalState::new();
@@ -184,6 +199,7 @@ async fn main() -> Result<()> {
         state.clone(),
         circuit_breaker.clone(),
         position_channel,
+        trading_db,
         dry_run,
     ));
 
