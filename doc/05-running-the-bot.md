@@ -4,7 +4,7 @@ Now that everything is set up, let's run your bot! This guide will show you how 
 
 ## Before You Start
 
-✅ **Checklist:**
+ **Checklist:**
 - [ ] Rust is installed (`rustc --version` works)
 - [ ] Bot is built (`cargo build --release` completed successfully)
 - [ ] `.env` file is created with your credentials
@@ -34,21 +34,21 @@ dotenvx run -- cargo run --release
 You'll see output like this:
 
 ```
-🚀 Prediction Market Arbitrage System v2.0
+ Prediction Market Arbitrage System v2.0
    Profit threshold: <0.5¢ (0.5% minimum profit)
    Monitored leagues: []
    Mode: DRY RUN (set DRY_RUN=0 to execute)
 [KALSHI] API key loaded
 [POLYMARKET] Creating async client and deriving API credentials...
 [POLYMARKET] Client ready for 0x742d35Cc...
-📂 Loaded 1234 team code mappings
-🔍 Market discovery...
-📊 Market discovery complete:
+ Loaded 1234 team code mappings
+ Market discovery...
+ Market discovery complete:
    - Matched market pairs: 45
 
-📋 Discovered market pairs:
-   ✅ Lakers vs Warriors | poly_yes_kalshi_no | Kalshi: KXLALGAME-12345
-   ✅ Chiefs vs Bills | kalshi_yes_poly_no | Kalshi: KXNFLGAME-67890
+ Discovered market pairs:
+    Lakers vs Warriors | poly_yes_kalshi_no | Kalshi: KXLALGAME-12345
+    Chiefs vs Bills | kalshi_yes_poly_no | Kalshi: KXNFLGAME-67890
    ...
 ```
 
@@ -58,7 +58,7 @@ The bot will then start monitoring markets and looking for arbitrage opportuniti
 
 Here's what each part means:
 
-- **🚀 Prediction Market Arbitrage System v2.0** - Bot version
+- ** Prediction Market Arbitrage System v2.0** - Bot version
 - **Profit threshold** - Minimum profit % needed to trade (0.5% default)
 - **Mode: DRY RUN** - Safe mode, no real trades
 - **[KALSHI] API key loaded** - Connected to Kalshi ✓
@@ -90,7 +90,7 @@ You'll see messages like:
 When an arbitrage opportunity is found (in dry run mode), you'll see:
 
 ```
-[INFO] 🔍 ARB OPPORTUNITY DETECTED (DRY RUN):
+[INFO]  ARB OPPORTUNITY DETECTED (DRY RUN):
    Market: Lakers vs Warriors
    Type: poly_yes_kalshi_no
    Cost: $0.98
@@ -102,7 +102,7 @@ In dry run mode, it shows what it **would** do but doesn't actually trade.
 
 ## Step 4: Run in Live Mode (When Ready)
 
-⚠️ **ONLY do this when you're confident everything works!**
+ **ONLY do this when you're confident everything works!**
 
 1. **Edit your `.env` file:**
    - Change `DRY_RUN=1` to `DRY_RUN=0`
@@ -239,5 +239,5 @@ Or review the other guides:
 - [Credentials](./03-credentials.md)
 - [Configuration](./04-configuration.md)
 
-Happy trading! 🚀
+Happy trading! 
 

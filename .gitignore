@@ -4,7 +4,6 @@ claude.md
 .DS_Store
 positions.json
 .discovery_cache.json
-
 .clob_market_cache.json
 trading_history.db
 trades_export_*.csv

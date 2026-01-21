@@ -23,12 +23,11 @@ The bot automatically finds these opportunities and executes trades for you 24/7
 ## What You'll Need
 
 Before starting, make sure you have:
-
-1. ✅ A computer (Windows, Mac, or Linux)
-2. ✅ An internet connection
-3. ✅ Accounts on both Polymarket and Kalshi
-4. ✅ Funds in both accounts (USDC on Polymarket, cash on Kalshi)
-5. ✅ Basic computer skills (opening files, copying text)
+1.  A computer (Windows, Mac, or Linux)
+2.  An internet connection
+3.  Accounts on both Polymarket and Kalshi
+4.  Funds in both accounts (USDC on Polymarket, cash on Kalshi)
+5.  Basic computer skills (opening files, copying text)
 
 ## Quick Overview
 
@@ -52,11 +51,11 @@ Ready to start? Follow these guides in order:
 
 ## Important Safety Notes
 
-⚠️ **Always start in DRY RUN mode** - This lets you test the bot without risking real money. The bot is set to dry run by default, so your real money is safe until you're ready.
+ **Always start in DRY RUN mode** - This lets you test the bot without risking real money. The bot is set to dry run by default, so your real money is safe until you're ready.
 
-⚠️ **Start with small amounts** - Even when you go live, start with small positions to make sure everything works correctly.
+ **Start with small amounts** - Even when you go live, start with small positions to make sure everything works correctly.
 
-⚠️ **Monitor your bot** - Check on it regularly, especially in the beginning.
+ **Monitor your bot** - Check on it regularly, especially in the beginning.
 
 ---
 
