@@ -390,7 +390,10 @@ cargo bench
 
 ###  Roadmap
 
-Additional trading systems with advanced strategies are currently in development. These will feature enhanced algorithmic trading capabilities and sophisticated market analysis tools. For updates and inquiries, contact via Telegram: [@mistKail](https://t.me/mistKail)
+Additional trading systems with advanced strategies are currently in development. These will feature enhanced algorithmic trading capabilities and sophisticated market analysis tools. For updates and inquiries, contact:
+- **Telegram:** [@MistKail](https://t.me/MistKail)
+- **X (Twitter):** [@MistKail](https://x.com/MistKail)
+- **GitHub:** [mistKail](https://github.com/mistKail)
 
 ---
 
@@ -430,7 +433,10 @@ For operational issues, consult the **[Troubleshooting Guide](./doc/06-troublesh
 | `No market pairs found` | Force discovery refresh or check market hours - see [Troubleshooting Guide](./doc/06-troubleshooting.md) |
 | No trade execution | Verify `DRY_RUN=0` and circuit breaker thresholds |
 
-For unresolved issues, contact technical support: [@mistKail](https://t.me/mistKail)
+For unresolved issues, contact technical support:
+- **Telegram:** [@MistKail](https://t.me/MistKail)
+- **X (Twitter):** [@MistKail](https://x.com/MistKail)
+- **GitHub:** [mistKail](https://github.com/mistKail)
 
 ---
 
@@ -462,7 +468,9 @@ Contributions are welcome from developers interested in prediction market techno
 
 ## Support & Contact
 
-- **Technical Support:** For assistance with setup, configuration, or operational issues, please contact via Telegram: [@mistKail](https://t.me/mistKail)
+- **Telegram:** [@MistKail](https://t.me/MistKail)
+- **X (Twitter):** [@MistKail](https://x.com/MistKail)
+- **GitHub:** [mistKail](https://github.com/mistKail)
 - **Documentation:** Comprehensive guides are available in the [documentation folder](./doc/)
 - **Bug Reports:** Submit issues via GitHub's issue tracker
 - **Feature Requests:** Proposals for enhancements can be discussed via GitHub issues or Telegram
@@ -496,4 +504,7 @@ To begin using the arbitrage bot, follow the documentation in sequence:
 
 1. [Getting Started](./doc/01-getting-started.md) → 2. [Installation](./doc/02-installation.md) → 3. [Credentials](./doc/03-credentials.md) → 4. [Configuration](./doc/04-configuration.md) → 5. [Running the Bot](./doc/05-running-the-bot.md)
 
-For technical inquiries or support, contact: [@mistKail](https://t.me/mistKail)
+For technical inquiries or support, contact:
+- **Telegram:** [@MistKail](https://t.me/MistKail)
+- **X (Twitter):** [@MistKail](https://x.com/MistKail)
+- **GitHub:** [mistKail](https://github.com/mistKail)

@@ -255,3 +255,13 @@ cargo run --bin trading_history
 ```
 
 Happy trading!
+
+---
+
+## Contact & Support
+
+For questions, support, or inquiries:
+
+- **Telegram:** [@MistKail](https://t.me/MistKail)
+- **X (Twitter):** [@MistKail](https://x.com/MistKail)
+- **GitHub:** [mistKail](https://github.com/mistKail)
