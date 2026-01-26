@@ -393,7 +393,7 @@ cargo bench
 Additional trading systems with advanced strategies are currently in development. These will feature enhanced algorithmic trading capabilities and sophisticated market analysis tools. For updates and inquiries, contact:
 - **Telegram:** [@MistKail](https://t.me/MistKail)
 - **X (Twitter):** [@MistKail](https://x.com/MistKail)
-- **GitHub:** [mistKail](https://github.com/mistKail)
+- **GitHub:** [mistKail](https://github.com/kail0206)
 
 ---
 
@@ -436,7 +436,7 @@ For operational issues, consult the **[Troubleshooting Guide](./doc/06-troublesh
 For unresolved issues, contact technical support:
 - **Telegram:** [@MistKail](https://t.me/MistKail)
 - **X (Twitter):** [@MistKail](https://x.com/MistKail)
-- **GitHub:** [mistKail](https://github.com/mistKail)
+- **GitHub:** [mistKail](https://github.com/kail0206)
 
 ---
 
@@ -470,7 +470,7 @@ Contributions are welcome from developers interested in prediction market techno
 
 - **Telegram:** [@MistKail](https://t.me/MistKail)
 - **X (Twitter):** [@MistKail](https://x.com/MistKail)
-- **GitHub:** [mistKail](https://github.com/mistKail)
+- **GitHub:** [mistKail](https://github.com/kail0206)
 - **Documentation:** Comprehensive guides are available in the [documentation folder](./doc/)
 - **Bug Reports:** Submit issues via GitHub's issue tracker
 - **Feature Requests:** Proposals for enhancements can be discussed via GitHub issues or Telegram
@@ -507,4 +507,4 @@ To begin using the arbitrage bot, follow the documentation in sequence:
 For technical inquiries or support, contact:
 - **Telegram:** [@MistKail](https://t.me/MistKail)
 - **X (Twitter):** [@MistKail](https://x.com/MistKail)
-- **GitHub:** [mistKail](https://github.com/mistKail)
+- **GitHub:** [mistKail](https://github.com/kail0206)
