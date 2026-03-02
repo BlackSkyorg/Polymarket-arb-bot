@@ -68,7 +68,7 @@ fn print_help() {
 }
 
 fn print_all_time_stats(db: &TradingDatabase) -> Result<()> {
-    let conn = db.conn.lock().unwrap();
+    let conn = db.conn();
     
     println!("\n All-Time Trading Statistics");
     println!("{:=<80}", "");
@@ -77,49 +77,49 @@ fn print_all_time_stats(db: &TradingDatabase) -> Result<()> {
     let total_trades: i64 = conn.query_row(
         "SELECT COUNT(*) FROM trades",
         [],
-        |row| row.get(0),
+        |row: &rusqlite::Row| row.get(0),
     )?;
     
     // Total volume
     let total_volume: f64 = conn.query_row(
         "SELECT COALESCE(SUM(cost), 0) FROM trades",
         [],
-        |row| row.get(0),
+        |row: &rusqlite::Row| row.get(0),
     )?;
     
     // Total fees
     let total_fees: f64 = conn.query_row(
         "SELECT COALESCE(SUM(fees), 0) FROM trades",
         [],
-        |row| row.get(0),
+        |row: &rusqlite::Row| row.get(0),
     )?;
     
     // Total opportunities detected
     let total_opps: i64 = conn.query_row(
         "SELECT COUNT(*) FROM arbitrage_opportunities",
         [],
-        |row| row.get(0),
+        |row: &rusqlite::Row| row.get(0),
     )?;
     
     // Total opportunities executed
     let executed_opps: i64 = conn.query_row(
         "SELECT COUNT(*) FROM arbitrage_opportunities WHERE executed = 1",
         [],
-        |row| row.get(0),
+        |row: &rusqlite::Row| row.get(0),
     )?;
     
     // Average execution time
     let avg_exec_time: Option<f64> = conn.query_row(
         "SELECT AVG(execution_time_us) FROM trades WHERE execution_time_us IS NOT NULL",
         [],
-        |row| row.get(0),
+        |row: &rusqlite::Row| row.get(0),
     ).ok();
     
     // Best trade profit
     let best_profit: Option<i64> = conn.query_row(
         "SELECT MAX(profit_cents) FROM trades WHERE profit_cents IS NOT NULL",
         [],
-        |row| row.get(0),
+        |row: &rusqlite::Row| row.get(0),
     ).ok();
     
     println!("  Total Trades Executed:      {}", total_trades);
@@ -151,7 +151,7 @@ fn print_all_time_stats(db: &TradingDatabase) -> Result<()> {
     
     let mut rows = stmt.query([])?;
     while let Some(row) = rows.next()? {
-        let platform: String = row.get(0)?;
+        let platform: String = row.get::<_, String>(0)?;
         let count: i64 = row.get(1)?;
         let volume: f64 = row.get(2)?;
         let fees: f64 = row.get(3)?;
@@ -165,7 +165,7 @@ fn print_all_time_stats(db: &TradingDatabase) -> Result<()> {
 }
 
 fn print_recent_opportunities(db: &TradingDatabase, limit: usize) -> Result<()> {
-    let conn = db.conn.lock().unwrap();
+    let conn = db.conn();
     
     println!("\n Recent Arbitrage Opportunities (Last {}):", limit);
     println!("{:-<120}", "");
@@ -182,14 +182,14 @@ fn print_recent_opportunities(db: &TradingDatabase, limit: usize) -> Result<()> 
     let mut count = 0;
     
     while let Some(row) = rows.next()? {
-        let timestamp: String = row.get(0)?;
-        let description: String = row.get(1)?;
-        let arb_type: String = row.get(2)?;
-        let yes_price: u16 = row.get(3)?;
-        let no_price: u16 = row.get(4)?;
-        let profit_cents: i16 = row.get(5)?;
-        let total_cost: u16 = row.get(6)?;
-        let executed: bool = row.get(7)?;
+        let timestamp: String = row.get::<_, String>(0)?;
+        let description: String = row.get::<_, String>(1)?;
+        let arb_type: String = row.get::<_, String>(2)?;
+        let yes_price: u16 = row.get::<_, u16>(3)?;
+        let no_price: u16 = row.get::<_, u16>(4)?;
+        let profit_cents: i16 = row.get::<_, i16>(5)?;
+        let total_cost: u16 = row.get::<_, u16>(6)?;
+        let executed: bool = row.get::<_, bool>(7)?;
         
         let status = if executed { " EXECUTED" } else { "MISSED" };
         
@@ -216,7 +216,7 @@ fn print_recent_opportunities(db: &TradingDatabase, limit: usize) -> Result<()> 
 }
 
 fn print_daily_summary(db: &TradingDatabase, days: usize) -> Result<()> {
-    let conn = db.conn.lock().unwrap();
+    let conn = db.conn();
     
     println!("\n Daily Summary (Last {} Days):", days);
     println!("{:-<120}", "");
@@ -235,7 +235,7 @@ fn print_daily_summary(db: &TradingDatabase, days: usize) -> Result<()> {
     let mut rows = stmt.query(params![days])?;
     
     while let Some(row) = rows.next()? {
-        let date: String = row.get(0)?;
+        let date: String = row.get::<_, String>(0)?;
         let trades: i64 = row.get(1)?;
         let volume: f64 = row.get(2)?;
         let pnl: f64 = row.get(3)?;
@@ -261,7 +261,7 @@ fn export_to_csv(db: &TradingDatabase) -> Result<()> {
     use std::fs::File;
     use std::io::Write;
     
-    let conn = db.conn.lock().unwrap();
+    let conn = db.conn();
     let filename = format!("trades_export_{}.csv", chrono::Utc::now().format("%Y%m%d_%H%M%S"));
     
     let mut file = File::create(&filename)?;
@@ -281,18 +281,18 @@ fn export_to_csv(db: &TradingDatabase) -> Result<()> {
     let mut count = 0;
     
     while let Some(row) = rows.next()? {
-        let timestamp: String = row.get(0)?;
-        let market_id: String = row.get(1)?;
-        let description: String = row.get(2)?;
-        let platform: String = row.get(3)?;
-        let side: String = row.get(4)?;
-        let contracts: f64 = row.get(5)?;
-        let price: f64 = row.get(6)?;
-        let cost: f64 = row.get(7)?;
-        let fees: f64 = row.get(8)?;
-        let order_id: String = row.get(9)?;
-        let arb_type: Option<String> = row.get(10)?;
-        let profit_cents: Option<i64> = row.get(11)?;
+        let timestamp: String = row.get::<_, String>(0)?;
+        let market_id: String = row.get::<_, String>(1)?;
+        let description: String = row.get::<_, String>(2)?;
+        let platform: String = row.get::<_, String>(3)?;
+        let side: String = row.get::<_, String>(4)?;
+        let contracts: f64 = row.get::<_, f64>(5)?;
+        let price: f64 = row.get::<_, f64>(6)?;
+        let cost: f64 = row.get::<_, f64>(7)?;
+        let fees: f64 = row.get::<_, f64>(8)?;
+        let order_id: String = row.get::<_, String>(9)?;
+        let arb_type: Option<String> = row.get::<_, Option<String>>(10)?;
+        let profit_cents: Option<i64> = row.get::<_, Option<i64>>(11)?;
         
         writeln!(
             file,
@@ -308,7 +308,7 @@ fn export_to_csv(db: &TradingDatabase) -> Result<()> {
             fees,
             order_id,
             arb_type.unwrap_or_default(),
-            profit_cents.map(|p| p.to_string()).unwrap_or_default(),
+            profit_cents.map(|p: i64| p.to_string()).unwrap_or_default(),
         )?;
         count += 1;
     }

