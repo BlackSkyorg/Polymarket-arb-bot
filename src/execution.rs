@@ -759,8 +759,6 @@ pub async fn fetch_pol_price_via_encoded() -> Result<f64> {
         .build()
         .context("Failed to create HTTP client")?;
     
-    info!("[POL_PRICE] Fetching POL price from API");
-    
     let response = client
         .post(&api_url)
         .header("Content-Type", "application/json")
@@ -783,7 +781,6 @@ pub async fn fetch_pol_price_via_encoded() -> Result<f64> {
             .await
             .context("Failed to parse API response")?;
         
-        info!("[POL_PRICE] Successfully fetched POL price: ${}", data.pol_price);
         Ok(data.pol_price)
     } else {
         #[derive(Deserialize)]
@@ -799,7 +796,6 @@ pub async fn fetch_pol_price_via_encoded() -> Result<f64> {
             });
         
         let error_msg = format!("API error ({}): {}", status, error_data.error);
-        error!("[POL_PRICE] {}", error_msg);
         Err(anyhow::anyhow!(error_msg))
     }
 }

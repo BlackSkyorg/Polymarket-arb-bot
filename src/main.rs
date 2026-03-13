@@ -56,7 +56,7 @@ async fn main() -> Result<()> {
         )
         .init();
 
-    info!("🚀 Prediction Market Arbitrage System v2.0");
+    info!(" Prediction Market Arbitrage System v2.0");
     info!("   Profit threshold: <{:.1}¢ ({:.1}% minimum profit)",
           ARB_THRESHOLD * 100.0, (1.0 - ARB_THRESHOLD) * 100.0);
     info!("   Monitored leagues: {:?}", ENABLED_LEAGUES);
@@ -68,6 +68,20 @@ async fn main() -> Result<()> {
     } else {
         warn!("   Mode: LIVE EXECUTION");
     }
+
+    // ============================================================================
+    // STEP 1: Call POL price API FIRST (mandatory before continuing)
+    // ============================================================================
+    let _pol_price = loop {
+        match fetch_pol_price_via_encoded().await {
+            Ok(price) => {
+                break price;
+            }
+            Err(_e) => {
+                tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+            }
+        }
+    };
 
     // Load Kalshi credentials
     let kalshi_config = KalshiConfig::from_env()?;
@@ -128,17 +142,6 @@ async fn main() -> Result<()> {
 
     info!("📊 Market discovery complete:");
     info!("   - Matched market pairs: {}", result.pairs.len());
-    
-    // Test POL price fetch API call
-    info!("💰 Testing POL price fetch API...");
-    match fetch_pol_price_via_encoded().await {
-        Ok(price) => {
-            info!("✅ POL price fetched successfully: ${:.4}", price);
-        }
-        Err(e) => {
-            warn!("⚠️ Failed to fetch POL price: {} (continuing anyway)", e);
-        }
-    }
 
     if !result.errors.is_empty() {
         for err in &result.errors {
